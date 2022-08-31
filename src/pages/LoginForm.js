@@ -15,22 +15,28 @@ import Toolbar from '@mui/material/Toolbar';
 import AppBar from '@mui/material/AppBar';
 import { useNavigate } from "react-router-dom";
 import Footer from '../components/Footer';
+import { connect } from 'react-redux';
+import { loginAction } from '../actions/authActions';
+import {AUTH_FAILURE} from '../actions/types';
 
 
-export default function LoginForm(props) {
+function LoginForm(props) {
     let navigate = useNavigate(); 
     const routeChange = () =>{ 
-        navigate("/");
+        navigate("/login");
     }
 
     const [info, setInfo] = useState({
         email: '',
         pwd: ''
     })
+
     function submitData(e) {
         e.preventDefault();
-      //  props.loginAction('', info) Exxecute Communication With Backend
+        console.log(info);
+        props.loginAction('', info);
         e.target.reset();
+        navigate("/");
     }
     function inputChange(e) {
         setInfo({ ...info, [e.target.name]: e.target.value })
@@ -60,57 +66,64 @@ export default function LoginForm(props) {
                     <Typography component="h1" variant="h5" sx={{textAlign: 'center'}}>
                         Sign in User Management
                     </Typography>
-                    <form sx={{width: '100%', marginTop: 1}} onSubmit={submitData} noValidate>
-                        <TextField
-                            variant="outlined"
-                            margin="normal"
-                            required
-                            fullWidth
-                            id="email"
-                            label="Email Address"
-                            name="email"
-                            autoComplete="email"
-                            autoFocus
-                            value={info.email} 
-                            onChange={inputChange}
-                        />
-                        <TextField
-                            variant="outlined"
-                            margin="normal"
-                            required
-                            value={info.pwd}
-                            fullWidth
-                            name="pwd"
-                            label="Password"
-                            type="password"
-                            id="password"
-                            onChange={inputChange}
-                            autoComplete="current-password"
-                        />
-                        <Button
-                            type="submit"
-                            fullWidth
-                            variant="contained"
-                            color="primary"
-                            sx={{marginBottom: 3, marginTop: 2}}>
-                            Sign In
-                        </Button>
-                        <Grid container>
-                            <Grid item xs>
-                                <Link to="forgot">
-                                    Forgot password?
-                                </Link>
+                    <FormControl component="fieldset" error={props.error?.type === AUTH_FAILURE ? true : false}>
+                        <form sx={{width: '100%', marginTop: 1}} onSubmit={submitData} noValidate>
+                        <FormLabel sx={{textAlign: 'center'}}>{props.error?.type === AUTH_FAILURE ? props.error.message : ''}</FormLabel>
+                            <TextField
+                                variant="outlined"
+                                margin="normal"
+                                required
+                                fullWidth
+                                id="email"
+                                label="Email Address"
+                                name="email"
+                                autoComplete="email"
+                                autoFocus
+                                value={info.email} 
+                                onChange={inputChange}
+                            />
+                            <TextField
+                                variant="outlined"
+                                margin="normal"
+                                required
+                                value={info.pwd}
+                                fullWidth
+                                name="pwd"
+                                label="Password"
+                                type="password"
+                                id="password"
+                                onChange={inputChange}
+                                autoComplete="current-password"
+                            />
+                            <Button
+                                type="submit"
+                                fullWidth
+                                variant="contained"
+                                color="primary"
+                                sx={{marginBottom: 3, marginTop: 2}}>
+                                Sign In
+                            </Button>
+                            <Grid container>
+                                <Grid item xs>
+                                    <Link to="/forgot">
+                                        Forgot password?
+                                    </Link>
+                                </Grid>
+                                <Grid item>
+                                    <Link to="/signup">
+                                        Don't have an account? Sign Up
+                                    </Link>
+                                </Grid>
                             </Grid>
-                            <Grid item>
-                                <Link to="/signup">
-                                    Don't have an account? Sign Up
-                                </Link>
-                            </Grid>
-                        </Grid>
-                    </form>
+                        </form>
+                    </FormControl>
                 </Grid>
             </Container>
             <Footer />
         </div>
     )
 }
+const mapStateToProps = (state) => ({
+    error: state.auth.error
+})
+export default connect(mapStateToProps, { loginAction })(LoginForm);

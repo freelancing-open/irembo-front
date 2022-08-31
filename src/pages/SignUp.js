@@ -21,8 +21,15 @@ import Select from '@mui/material/Select';
 import { DesktopDatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import CameraIcon from '@mui/icons-material/CameraAlt';
+import { registerAction } from '../actions/authActions';
+import { connect } from 'react-redux';
 
-export default function SignUp() {
+function SignUp(props) {
+
+    let navigate = useNavigate(); 
+    const routeChange = () =>{ 
+        navigate("/login");
+    }
 
     const [info, setInfo] = useState({
       firstName: '',
@@ -35,11 +42,14 @@ export default function SignUp() {
       maritalStatus: '',
       nationality: '',
       profilePicture: null
-  })
-    function signup(e){
+    })
+
+    function register(e){
       e.preventDefault();
-     // props.registerAction( info)
+      props.registerAction(info);
       e.target.reset();
+      navigate("/");
+      navigate("/");
     }
 
     function inputChange(e){
@@ -47,7 +57,8 @@ export default function SignUp() {
     }
 
     function handleDateChange(data){
-        setInfo({...info, 'dob': data})
+        setInfo({...info, "dob": data});
+       
     }
 
     const uploadProfileImage = (e) => {
@@ -59,10 +70,7 @@ export default function SignUp() {
         })*/
     }
     
-    let navigate = useNavigate(); 
-    const routeChange = () =>{ 
-        navigate("/");
-    }
+   
 
     return (
         <div>
@@ -89,7 +97,7 @@ export default function SignUp() {
                     <Typography component="h1" variant="h5" sx={{textAlign: 'center', fontWeight: 'bold', marginBottom: 2}}>
                         Sign Up to User Management
                     </Typography>
-                    <form onSubmit={signup} noValidate>
+                    <form onSubmit={register} noValidate>
                         <Grid container  spacing={1}>
                             <Grid item xs={12} sm={6}>
                                 <TextField
@@ -153,7 +161,7 @@ export default function SignUp() {
                                     name="cpwd"
                                     label="Confirm Password"
                                     type="password"
-                                    id="password"
+                                    id="confirm_password"
                                     value={info.cpwd} 
                                     onChange={inputChange}
                                     autoComplete="current-password"
@@ -166,14 +174,14 @@ export default function SignUp() {
                                         <Select
                                             labelId="demo-simple-select-label"
                                             id="demo-simple-select"
-                                            name="age"
-                                            value={info.age}
+                                            name="gender"
+                                            value={info.gender}
                                             label="Gender"
                                             onChange={inputChange}>
 
-                                            <MenuItem value="M">Male</MenuItem>
-                                            <MenuItem value="F">Female</MenuItem>
-                                            <MenuItem value="O">Other</MenuItem>
+                                            <MenuItem value="Male">Male</MenuItem>
+                                            <MenuItem value="Female">Female</MenuItem>
+                                            <MenuItem value="Other">Other</MenuItem>
                                         </Select>
                                     </FormControl>
                                 </Box>
@@ -240,7 +248,8 @@ export default function SignUp() {
                                         hidden
                                     />
                                 </Button>
-                                    </Grid>
+                            </Grid>
+
                            
                         </Grid>
                         <Button
@@ -252,7 +261,7 @@ export default function SignUp() {
                             Sign Up
                         </Button>
                         <Typography align='center'>
-                            <Link to="/" color='inherit' underline='none'>
+                            <Link to="/login" color='inherit' underline='none'>
                                 Already have an account? Sign in
                             </Link>
                         </Typography>
@@ -263,3 +272,7 @@ export default function SignUp() {
         </div>
     );
   }
+const mapStateToProps = (state) => ({
+    error: state.auth.error
+})
+export default connect(mapStateToProps, { registerAction })(SignUp);
